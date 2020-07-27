@@ -1,0 +1,33 @@
+require('express') in order to initiate the app.
+require('dotenv') in order to use variables everywhere.
+
+dotenv.config({ path: 'thePath' }) in order to select the place of variables.
+
+perview in postman shows you how it looks in the browser.
+
+res.send() is used for sending html and maybe used for sending json.
+
+res.json() is used for sending json data only.
+
+res.sendStatus() is used for sending a specific status.
+
+if you want to send data with status you can use: res.status().send()/json()
+
+the APIs to be created: bootcamps, courses, reviews, auth, users.
+
+
+to make a router:
+-create a file of js extension.
+-require('express') and make an express.router().
+-summon the router in the server file.
+-then make the app use it.
+
+
+you can make a controller to separate the functions from the api/${apiName}functions by:
+-creating a file named as ${apiName} and start the function by export
+-require it in the router.js file
+-use it by coding the following code in router.js: app.route(`${thePath('/api/version1/bootcamps')}`).get(theFunction).post(theFunction)... etc
+
+every middleware function (a function that uses req, res cycle) are attached to each other and setting a variable in a one in the main .js file enables us to use this variable in every middleware function.
+
+morgan is a HTTP request logger middleware for Node.js
