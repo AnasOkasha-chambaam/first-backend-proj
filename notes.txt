@@ -31,3 +31,11 @@ you can make a controller to separate the functions from the api/${apiName}funct
 every middleware function (a function that uses req, res cycle) are attached to each other and setting a variable in a one in the main .js file enables us to use this variable in every middleware function.
 
 morgan is a HTTP request logger middleware for Node.js
+
+
+to handle unhandled rejection:
+-convert app.listen into a const
+-code: process.on(`${theErrName}`, (err, promise) => {
+console.log(`err: ${err.message}`}
+${theConstWhichEqualToApp.listen}.close(() => process.exit(1*one here is because it's a failure*))
+})
