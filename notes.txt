@@ -39,3 +39,28 @@ to handle unhandled rejection:
 console.log(`err: ${err.message}`}
 ${theConstWhichEqualToApp.listen}.close(() => process.exit(1*one here is because it's a failure*))
 })
+
+
+when creating a schema, attributes can have attributes of {
+type: its-type,
+enum: allowed value,
+maxLength: [its-maxLength, msg],
+max: its-maxValue,
+min: its-minValue,
+required: 1 or 0,
+unique: 1 or 0
+}
+
+you can make an attribute inside another attribute.
+
+To get values of an object use:
+Object.values()
+
+To make a seeder:
+-Create a new file and name it.
+-Require:
+'mongoose' to connect to the database.
+`${yourModel}` to create or delete the data of the json file.
+'fs' to get the path of the json file and read it.
+'colors' to colorize the messages in the console.
+'dotenv' to reach the global variables.

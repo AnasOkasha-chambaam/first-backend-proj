@@ -8,5 +8,5 @@ exports.connetToDB = async () => {
     useUnifiedTopology: true
   })
 
-  console.log(`Connected to mongoDB successfully: ${conn.connection.host}`)
+  console.log(`Connected to mongoDB successfully: ${conn.connection.host}`.cyan.underline)
 }

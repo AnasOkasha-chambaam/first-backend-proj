@@ -6,15 +6,36 @@ const theSecExpress = require('express'),
     updateOneBootcamp,
     deleteOneBootcamp
   } = require('../controller/bootcamps'),
-  theRouter = theSecExpress.Router();
+  {
+    getAllCourses,
+    postACourse,
+    updateACourse,
+    getACourse,
+    deleteACourse,
+    getABootcampCourses
+  } = require('../controller/courses'),
+  theRouter = theSecExpress.Router({
+    mergeParams: true
+  });
 
-theRouter.route('/')
+theRouter.route('/bootcamps')
   .get(getAllBootcamps)
   .post(addOneBootcamp)
 
-theRouter.route('/:id')
+theRouter.route('/bootcamps/:id')
   .get(getOneBootcamp)
   .put(updateOneBootcamp)
   .delete(deleteOneBootcamp)
 
+theRouter.route('/courses')
+  .get(getAllCourses)
+  .post(postACourse)
+
+theRouter.route('/courses/:id')
+  .put(updateACourse)
+  .get(getACourse)
+  .delete(deleteACourse)
+
+theRouter.route('/bootcamps/:bootcampIDD/courses')
+  .get(getABootcampCourses)
 module.exports = theRouter;
