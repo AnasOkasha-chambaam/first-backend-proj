@@ -18,7 +18,8 @@ exports.getAllBootcamps = async (requ, resp, next) => {
     // console.log(reqQuery);
     queryStr = JSON.stringify(reqQuery);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
-    query = TheBootSch.find(JSON.parse(queryStr)).populate('ccourses');
+    query = TheBootSch.find(JSON.parse(queryStr))
+      .populate('ccourses');
     console.log(query)
 
     if (requ.query.select) {

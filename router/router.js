@@ -12,7 +12,8 @@ const theSecExpress = require('express'),
     updateACourse,
     getACourse,
     deleteACourse,
-    getABootcampCourses
+    getABootcampCourses,
+    postABootcampCourse
   } = require('../controller/courses'),
   theRouter = theSecExpress.Router({
     mergeParams: true
@@ -38,4 +39,5 @@ theRouter.route('/courses/:id')
 
 theRouter.route('/bootcamps/:bootcampIDD/courses')
   .get(getABootcampCourses)
+  .post(postABootcampCourse)
 module.exports = theRouter;

@@ -1,16 +1,23 @@
-const Courses = require("../model/Courses");
-const ErrResp = require("../utils/errResp");
-const {
-  Error
-} = require("mongoose");
+const Courses = require("../model/Courses"),
+  Bootcamps = require('../model/Bootcamps'),
+  ErrResp = require("../utils/errResp"),
+  {
+    Error
+  } = require("mongoose");
 
 exports.getABootcampCourses = async (req, res, next) => {
   console.log(req.params.bootcampIDD);
   try {
     if (req.params.bootcampIDD) {
       const relatedCourses = await Courses.find({
-        bootcamp: req.params.bootcampIDD,
-      }).populate('bootcamp', 'name description', 'BootSch');
+          bootcamp: req.params.bootcampIDD,
+        })
+        .populate({
+          path: 'bootcamp',
+          model: Bootcamps,
+          select: 'name description'
+        })
+      // .populate('bootcamp', 'name description', 'BootSch');
 
       if (!relatedCourses) {
         return res.status(404).send({
@@ -38,7 +45,13 @@ exports.getABootcampCourses = async (req, res, next) => {
 exports.getAllCourses = async (req, res, next) => {
   // console.log(req.)
   try {
-    const AllCourses = await Courses.find().populate('bootcamp', 'name description', 'BootSch');
+    const AllCourses = await Courses.find()
+      .populate({
+        path: 'bootcamp',
+        model: Bootcamps,
+        select: 'name description'
+      })
+    // .populate('bootcamp', 'name description', 'BootSch');
 
     res.status(200).send({
       success: "Yes",
@@ -52,7 +65,13 @@ exports.getAllCourses = async (req, res, next) => {
 
 exports.getACourse = async (req, res, next) => {
   try {
-    const ACourse = await Courses.findById(req.params.id);
+    const ACourse = await Courses.findById(req.params.id)
+      .populate({
+        path: 'bootcamp',
+        model: Bootcamps,
+        select: 'name description'
+      })
+    // .populate('bootcamp', 'name description', 'BootSch');
 
     if (!ACourse) {
       return next(new ErrResp("The course is not found!", 404));
@@ -80,6 +99,29 @@ exports.postACourse = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.postABootcampCourse = async (req, res, next) => {
+  try {
+    req.body.bootcamp = req.params.bootcampIDD;
+
+    const theBootcamp = await Bootcamps.findById(req.body.bootcamp);
+    if (!theBootcamp) {
+      return res.status(404).send({
+        success: false,
+        msg: `There is no bootcamp with the id ${req.params.id}`
+      })
+    }
+
+    const addedCourse = await Courses.create(req.body);
+    res.status(201).send({
+      success: true,
+      msg: `A course has been added successfully.`,
+      AddedCoures: addedCourse
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 exports.updateACourse = async (req, res, next) => {
   try {
@@ -111,7 +153,7 @@ exports.updateACourse = async (req, res, next) => {
 
 exports.deleteACourse = async (req, res, next) => {
   try {
-    const deletedCourse = await Courses.findByIdAndDelete(req.params.id);
+    const deletedCourse = await Courses.findById(req.params.id);
 
     if (!deletedCourse) {
       return res.status(404).send({
@@ -119,6 +161,8 @@ exports.deleteACourse = async (req, res, next) => {
         msg: `There is no such a course with the id of ${req.params.id}`,
       });
     }
+
+    await deletedCourse.remove()
 
     res.status(201).send({
       success: "Yes",
