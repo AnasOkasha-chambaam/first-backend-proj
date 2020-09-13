@@ -1,10 +1,12 @@
+const path = require('path')
 const theExpress = require("express"),
   theDotenv = require("dotenv"),
   {
     connetToDB
   } = require('./db'),
   colorse = require('colors'),
-  errorHan = require('./middleware/errhandler');
+  errorHan = require('./middleware/errhandler'),
+  fileUp = require('express-fileupload');
 
 theDotenv.config({
   path: "./config/config.env",
@@ -22,6 +24,8 @@ app.use(theExpress.json())
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+app.use(fileUp())
+app.use(theExpress.static(path.join(__dirname, 'public')))
 app.use("/api/version1", theBootcampFunctions);
 app.use(errorHan)
 

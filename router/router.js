@@ -4,7 +4,8 @@ const theSecExpress = require('express'),
     getOneBootcamp,
     addOneBootcamp,
     updateOneBootcamp,
-    deleteOneBootcamp
+    deleteOneBootcamp,
+    uploadAPhoto
   } = require('../controller/bootcamps'),
   {
     getAllCourses,
@@ -27,6 +28,9 @@ theRouter.route('/bootcamps/:id')
   .get(getOneBootcamp)
   .put(updateOneBootcamp)
   .delete(deleteOneBootcamp)
+
+theRouter.route('/bootcamps/:id/photo')
+  .put(uploadAPhoto)
 
 theRouter.route('/courses')
   .get(getAllCourses)

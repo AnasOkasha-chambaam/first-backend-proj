@@ -45,17 +45,82 @@ exports.getABootcampCourses = async (req, res, next) => {
 exports.getAllCourses = async (req, res, next) => {
   // console.log(req.)
   try {
-    const AllCourses = await Courses.find()
+
+    let theOrder,
+      AQuery = {
+        ...req.query
+      },
+      AStringQuery,
+      toRemove = ['select', 'sort', 'page', 'limit'];
+
+    toRemove.forEach(one => delete AQuery[one])
+    AStringQuery = JSON.stringify(AQuery);
+    AStringQuery = AStringQuery.replace(/\b(lte|lt|gte|gt|in)\b/g, match => `$${match}`);
+    AQuery = JSON.parse(AStringQuery)
+
+    theOrder = Courses.find(AQuery)
+    if (req.query.select) {
+      theOrder = theOrder.select(req.query.select.split(',').join(' '))
+    }
+    // console.log(req.query)
+
+    if (req.query.sort) {
+      let sortBy = req.query.sort.split(',').join(' ');
+      theOrder = theOrder.sort(sortBy);
+    } else {
+      theOrder = theOrder.sort("-createdAt")
+    }
+
+    let pagination = {},
+      currentPage = 0;
+
+    if (req.query.limit) {
+      let pageNo = parseInt(req.query.page) || 1,
+        theLimit = parseInt(req.query.limit) || 3,
+        toSkip = (pageNo - 1) * theLimit,
+        lastShown = pageNo * theLimit,
+        DocsNum = await Courses.countDocuments();
+      console.log(theLimit)
+      theOrder = theOrder.limit(theLimit).skip(toSkip);
+
+      console.log(req.query)
+
+      if (toSkip > 0) {
+        pagination.previous = {
+          prevPage: (pageNo - 1),
+          value: true
+        }
+      }
+      console.log(lastShown)
+      console.log(DocsNum)
+      if (lastShown < DocsNum) {
+        pagination.next = {
+          value: true,
+          nextPage: (pageNo + 1)
+        }
+      }
+      currentPage = pageNo
+    }
+
+
+    // console.log(AStringQuery)
+    // console.log(AQuery)
+
+
+    const AllCourses = await theOrder
       .populate({
         path: 'bootcamp',
         model: Bootcamps,
         select: 'name description'
       })
+    // console.log(req.query)
     // .populate('bootcamp', 'name description', 'BootSch');
 
     res.status(200).send({
       success: "Yes",
       coursesLength: AllCourses.length,
+      pagination: pagination,
+      currentPage,
       data: AllCourses,
     });
   } catch (error) {
