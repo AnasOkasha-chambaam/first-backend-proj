@@ -18,30 +18,33 @@ const theSecExpress = require('express'),
   } = require('../controller/courses'),
   theRouter = theSecExpress.Router({
     mergeParams: true
-  });
+  }),
+  {
+    protect
+  } = require('../middleware/auth')
 
 theRouter.route('/bootcamps')
   .get(getAllBootcamps)
-  .post(addOneBootcamp)
+  .post(protect, addOneBootcamp)
 
 theRouter.route('/bootcamps/:id')
   .get(getOneBootcamp)
-  .put(updateOneBootcamp)
-  .delete(deleteOneBootcamp)
+  .put(protect, updateOneBootcamp)
+  .delete(protect, deleteOneBootcamp)
 
 theRouter.route('/bootcamps/:id/photo')
-  .put(uploadAPhoto)
+  .put(protect, uploadAPhoto)
 
 theRouter.route('/courses')
   .get(getAllCourses)
-  .post(postACourse)
+  .post(protect, postACourse)
 
 theRouter.route('/courses/:id')
-  .put(updateACourse)
+  .put(protect, updateACourse)
   .get(getACourse)
-  .delete(deleteACourse)
+  .delete(protect, deleteACourse)
 
 theRouter.route('/bootcamps/:bootcampIDD/courses')
   .get(getABootcampCourses)
-  .post(postABootcampCourse)
+  .post(protect, postABootcampCourse)
 module.exports = theRouter;
