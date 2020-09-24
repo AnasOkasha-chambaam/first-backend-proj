@@ -6,11 +6,11 @@ const Courses = require("../model/Courses"),
   } = require("mongoose");
 
 exports.getABootcampCourses = async (req, res, next) => {
-  console.log(req.params.bootcampIDD);
+  console.log(req.params.id);
   try {
-    if (req.params.bootcampIDD) {
+    if (req.params.id) {
       const relatedCourses = await Courses.find({
-          bootcamp: req.params.bootcampIDD,
+          bootcamp: req.params.id,
         })
         .populate({
           path: 'bootcamp',
@@ -22,7 +22,7 @@ exports.getABootcampCourses = async (req, res, next) => {
       if (!relatedCourses) {
         return res.status(404).send({
           success: false,
-          msg: `There is no such a course with the id of ${req.params.bootcampIDD}`,
+          msg: `There is no such a course with the id of ${req.params.id}`,
         });
       }
 
@@ -154,6 +154,7 @@ exports.getACourse = async (req, res, next) => {
 exports.postACourse = async (req, res, next) => {
   try {
     console.log(req.body);
+    req.body.user = req.user.id;
     const AddedCourse = await Courses.create(req.body);
 
     res.status(201).send({
@@ -167,8 +168,8 @@ exports.postACourse = async (req, res, next) => {
 
 exports.postABootcampCourse = async (req, res, next) => {
   try {
-    req.body.bootcamp = req.params.bootcampIDD;
-
+    req.body.bootcamp = req.params.id;
+    req.body.user = req.user.id;
     const theBootcamp = await Bootcamps.findById(req.body.bootcamp);
     if (!theBootcamp) {
       return res.status(404).send({

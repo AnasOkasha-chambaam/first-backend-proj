@@ -1,8 +1,9 @@
-const jwt = require('jsonwebtoken'),
-  ErrResp = require('../utils/errResp'),
-  User = require('../model/Users')
+const jwt = require("jsonwebtoken"),
+  ErrResp = require("../utils/errResp"),
+  User = require("../model/Users"),
+  Bootcamp = require("../model/Bootcamps");
 
-
+/*
 exports.protect = async (req, res, next) => {
   // console.log('======================')
   // console.log(req.headers.authorization)
@@ -30,3 +31,68 @@ exports.protect = async (req, res, next) => {
   }
   next()
 }
+*/
+
+exports.protect = async (req, res, next) => {
+  let token;
+  if (req.cookies) {
+    token = req.cookies.TheToken;
+  } else if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = await req.headers.authorization.split(" ")[1];
+  }
+  if (!token) {
+    return next(new ErrResp("Please, sign in first!.", 401));
+  }
+  try {
+    const encoded = await jwt.verify(token, process.env.SecretOfPrivKey);
+    req.user = await User.findOne({
+      _id: encoded.id,
+    });
+    if (!req.user) {
+      return next(
+        new ErrResp(`There is no user with this id "${encoded.id}"`, 404)
+      );
+    }
+    // console.log(req.user)
+    // console.log('====-------=====')
+    // console.log(req.cookies)
+    next();
+  } catch (er) {
+    next(new ErrResp("You are not authorized to reach this!", 401));
+  }
+};
+
+exports.authorize = (...roles) => {
+  return async (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrResp(
+          `This user of role ${req.user.role} is not authorized to reach this route.`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};
+
+exports.makeSure = (msg) => {
+  return async (req, res, next) => {
+    const bootcamp = await Bootcamp.findById(req.params.id);
+    if (!bootcamp) {
+      return next(
+        new ErrResp("The id is not vaild. Please, enter a right one.", 404)
+      );
+    }
+
+    if (bootcamp.user.toString() !== req.user.id && req.user.role !== "admin") {
+      return next(
+        new ErrResp(`The user ${req.user.name} is not authorized to ${msg}`)
+      );
+    }
+    next();
+  };
+};

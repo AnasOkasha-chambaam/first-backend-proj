@@ -1,4 +1,6 @@
-const { model } = require("./Bootcamps"),
+const {
+  model
+} = require("./Bootcamps"),
   colors = require("colors"),
   Bootcamp = require("./Bootcamps");
 
@@ -39,14 +41,19 @@ const theMongoose = require("mongoose"),
     },
     bootcamp: {
       type: theMongoose.Schema.ObjectId,
+      ref: 'BootSch',
       required: true,
     },
+    user: {
+      type: theMongoose.Schema.ObjectId,
+      ref: 'theUsers',
+      required: true
+    }
   });
 
 courses.statics.getAv = async function (theId) {
   console.log("Calculateing the average cost...".blue);
-  const objj = await this.aggregate([
-    {
+  const objj = await this.aggregate([{
       $match: {
         bootcamp: theId,
       },
@@ -64,11 +71,9 @@ courses.statics.getAv = async function (theId) {
   console.log(objj);
   try {
     await Bootcamp.findByIdAndUpdate(
-      objj[0]._id,
-      {
+      objj[0]._id, {
         averageCost: Math.ceil(objj[0].averageCost / 10) * 10,
-      },
-      {
+      }, {
         new: true,
         runValidators: true,
       }

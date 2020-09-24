@@ -70,6 +70,32 @@ exports.login = async (req, res, next) => {
   }
 }
 
+exports.getMe = async (req, res, next) => {
+  res.status(200).send({
+    success: true,
+    LoggedInUser: req.user
+  })
+}
+
+exports.resetUserPassword = async (req, res, next) => {
+  const user = await AUser.findOne({
+    email: req.body.email
+  });
+  if (!user) {
+    return next(new ErrResp(`There is no user with the email ${req.body.email}`))
+  }
+  const TheToken = user.getResetPasswordToken();
+
+  await user.save({
+    validateBeforeSave: false
+  })
+  // console.log(TheToken)
+  res.status(200).send({
+    success: true,
+    user
+  })
+};
+
 const setLoginCookie = (res, statusCode, user) => {
   const token = user.getSignedJwtToken(),
     cookieOptions = {

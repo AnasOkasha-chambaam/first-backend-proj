@@ -2,13 +2,17 @@ const theExpress = require('express'),
   Router = theExpress.Router(),
   {
     register,
-    login
+    login,
+    getMe,
+    resetUserPassword
   } = require('../controller/auth'),
   {
     protect
   } = require('../middleware/auth')
 
 Router.post("/register", register)
-Router.post('/login', protect, login)
+Router.post('/login', login)
+Router.post('/getMe', protect, getMe)
+Router.post('/resetpassword', resetUserPassword)
 
 module.exports = Router

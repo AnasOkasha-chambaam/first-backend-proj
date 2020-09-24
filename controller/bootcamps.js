@@ -139,6 +139,16 @@ exports.addOneBootcamp = async (requ, resp, next) => {
     // console.log(`${typeof formatAdded}`.red);
 
     // const BootcampJSON = await TheBootSch.create();
+
+    requ.body.user = requ.user.id;
+    const checkABootcamp = await TheBootSch.findOne({
+      user: requ.body.user
+    });
+
+    if (checkABootcamp && requ.user.role !== 'admin') {
+      return next(new ErrResp(`The user of the id ${requ.body.user} has already established a bootcamp.`, 401))
+    }
+
     const BootcampJSON = await TheBootSch.create(requ.body);
     resp.status(201).json({
       success: true,
@@ -158,18 +168,17 @@ exports.addOneBootcamp = async (requ, resp, next) => {
 
 exports.updateOneBootcamp = async (requ, resp, next) => {
   try {
-    const UpdatedBootcamp = await TheBootSch.findByIdAndUpdate(
-      requ.params.id,
-      requ.body, {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const UpdatedBootcamp = await TheBootSch.findByIdAndUpdate(requ.params.id, requ.body, {
+      new: true,
+      runValidators: true
+    });
     if (!UpdatedBootcamp) {
       return next(
         new TheErrResp("The id is not vaild. Please, enter a right one.", 404)
       );
     }
+
+
     resp.status(201).json({
       success: true,
       TheUpdatedOne: UpdatedBootcamp,
@@ -195,11 +204,18 @@ exports.updateOneBootcamp = async (requ, resp, next) => {
 
 exports.deleteOneBootcamp = async (requ, resp, next) => {
   try {
+
+
+
     const DeletedBootcamp = await TheBootSch.findById(requ.params.id);
     if (!DeletedBootcamp) {
       return next(
         new TheErrResp("The id is not vaild. Please, enter a right one.", 404)
       );
+    }
+
+    if (requ.user.id != DeletedBootcamp.user) {
+      return next(new ErrResp(`You are not allowed to do this action.`, 403))
     }
 
     DeletedBootcamp.remove();

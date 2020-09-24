@@ -48,6 +48,7 @@ const destroyAllcourses = async () => {
 
 if (process.argv[2] === '-i') {
   addAllcourses()
-} else if (process.argv[2] === '-d') {
+}
+if (process.argv[2] === '-d') {
   destroyAllcourses()
 }

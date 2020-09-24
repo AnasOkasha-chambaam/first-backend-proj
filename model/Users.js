@@ -1,4 +1,5 @@
 const theMongoose = require('mongoose'),
+  crybto = require('crypto'),
   bcrypt = require('bcryptjs'),
   jwt = require('jsonwebtoken'),
   Users = new theMongoose.Schema({
@@ -31,7 +32,10 @@ const theMongoose = require('mongoose'),
     }
   })
 
-Users.pre('save', async function () {
+Users.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next()
+  }
   const salt = await bcrypt.genSalt(10);
   // console.log(salt)
   this.password = await bcrypt.hash(this.password, salt);
@@ -47,6 +51,15 @@ Users.methods.getSignedJwtToken = function () {
 
 Users.methods.verifyPassword = async function (insertedPass) {
   return await bcrypt.compare(insertedPass, this.password)
+}
+
+Users.methods.getResetPasswordToken = function () {
+  // await console.log(19 - 10)
+  const Token = crybto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = crybto.createHash('sha256').update(Token).digest('hex');
+  this.resetPassowrdExpire = Date.now() + 10 * 60 * 1000;
+
+  return Token;
 }
 
 module.exports = theMongoose.model('theUsers', Users)

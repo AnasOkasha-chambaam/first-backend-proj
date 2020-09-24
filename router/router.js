@@ -20,7 +20,9 @@ const theSecExpress = require('express'),
     mergeParams: true
   }),
   {
-    protect
+    protect,
+    authorize,
+    makeSure
   } = require('../middleware/auth')
 
 theRouter.route('/bootcamps')
@@ -29,22 +31,23 @@ theRouter.route('/bootcamps')
 
 theRouter.route('/bootcamps/:id')
   .get(getOneBootcamp)
-  .put(protect, updateOneBootcamp)
-  .delete(protect, deleteOneBootcamp)
+  .put(protect, authorize('publisher', 'admin'), makeSure('update this bootcamp'), updateOneBootcamp)
+  .delete(protect, authorize('publisher', 'admin'), makeSure('delete this bootcamp'), deleteOneBootcamp)
 
 theRouter.route('/bootcamps/:id/photo')
-  .put(protect, uploadAPhoto)
+  .put(protect, authorize('publisher', 'admin'), makeSure('update this bootcamp photo'), uploadAPhoto)
 
 theRouter.route('/courses')
   .get(getAllCourses)
-  .post(protect, postACourse)
+  .post(protect, authorize('publisher', 'admin'), postACourse)
 
 theRouter.route('/courses/:id')
-  .put(protect, updateACourse)
+  .put(protect, authorize('publisher', 'admin'), updateACourse)
   .get(getACourse)
-  .delete(protect, deleteACourse)
+  .delete(protect, authorize('publisher', 'admin'), deleteACourse)
 
-theRouter.route('/bootcamps/:bootcampIDD/courses')
+theRouter.route('/bootcamps/:id/courses')
   .get(getABootcampCourses)
-  .post(protect, postABootcampCourse)
+  .post(protect, authorize('publisher', 'admin'), makeSure('add a course to this bootcamp'), postABootcampCourse)
+
 module.exports = theRouter;

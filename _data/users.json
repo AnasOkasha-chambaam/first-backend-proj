@@ -1,5 +1,4 @@
-[
-	{
+[{
 		"_id": "5d7a514b5d2c12c7449be042",
 		"name": "Admin Account",
 		"email": "admin@gmail.com",
@@ -103,5 +102,19 @@
 		"email": "sara@gmail.com",
 		"role": "user",
 		"password": "123456"
+	},
+	{
+		"_id": "5f5f95e9c180932c200e06c7",
+		"role": "publisher",
+		"name": "The Second User Ever",
+		"password": "1234567890",
+		"email": "second@gmail.com"
+	},
+	{
+		"_id": "5f676aa965a05f15400a8fc9",
+		"role": "publisher",
+		"name": "The first User Ever",
+		"password": "12345678l0",
+		"email": "first@gmail.com"
 	}
 ]

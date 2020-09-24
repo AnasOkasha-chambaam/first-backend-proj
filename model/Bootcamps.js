@@ -87,6 +87,11 @@ const theMongoose = require('mongoose'),
     createdAt: {
       type: Date,
       default: Date.now
+    },
+    user: {
+      type: theMongoose.Schema.ObjectId,
+      ref: 'theUsers',
+      required: true
     }
   }, {
     toJSON: {
