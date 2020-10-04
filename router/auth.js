@@ -4,7 +4,10 @@ const theExpress = require('express'),
     register,
     login,
     getMe,
-    resetUserPassword
+    resetUserPassword,
+    resetPassFromToken,
+    editDetails,
+    editPassword
   } = require('../controller/auth'),
   {
     protect
@@ -14,5 +17,8 @@ Router.post("/register", register)
 Router.post('/login', login)
 Router.post('/getMe', protect, getMe)
 Router.post('/resetpassword', resetUserPassword)
+Router.put('/resetpassword/:resettoken', resetPassFromToken)
+Router.put('/editdetails', protect, editDetails)
+Router.put('/editpassword', protect, editPassword)
 
 module.exports = Router

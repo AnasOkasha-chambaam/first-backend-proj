@@ -16,6 +16,17 @@ const theSecExpress = require('express'),
     getABootcampCourses,
     postABootcampCourse
   } = require('../controller/courses'),
+  {
+    onlyAdmin
+  } = require('../middleware/auth'),
+  {
+    getAllUsers,
+    getAUser,
+    addAUser,
+    deleteAUser,
+    updateAUserDetails,
+    changeUserPassword
+  } = require('../controller/users'),
   theRouter = theSecExpress.Router({
     mergeParams: true
   }),
@@ -25,6 +36,7 @@ const theSecExpress = require('express'),
     makeSure
   } = require('../middleware/auth')
 
+// bootcamps
 theRouter.route('/bootcamps')
   .get(getAllBootcamps)
   .post(protect, addOneBootcamp)
@@ -37,6 +49,7 @@ theRouter.route('/bootcamps/:id')
 theRouter.route('/bootcamps/:id/photo')
   .put(protect, authorize('publisher', 'admin'), makeSure('update this bootcamp photo'), uploadAPhoto)
 
+// courses
 theRouter.route('/courses')
   .get(getAllCourses)
   .post(protect, authorize('publisher', 'admin'), postACourse)
@@ -50,4 +63,18 @@ theRouter.route('/bootcamps/:id/courses')
   .get(getABootcampCourses)
   .post(protect, authorize('publisher', 'admin'), makeSure('add a course to this bootcamp'), postABootcampCourse)
 
+
+// users
+theRouter.route('/users')
+  .get(onlyAdmin, getAllUsers)
+  .post(onlyAdmin, addAUser)
+
+
+theRouter.route('/users/:id')
+  .get(onlyAdmin, getAUser)
+  .delete(onlyAdmin, deleteAUser)
+  .put(onlyAdmin, updateAUserDetails)
+
+theRouter.route('/users/:id/resetpass')
+  .put(onlyAdmin, changeUserPassword)
 module.exports = theRouter;

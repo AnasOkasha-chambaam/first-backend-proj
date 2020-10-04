@@ -23,7 +23,8 @@ exports.getAllBootcamps = async (requ, resp, next) => {
       (match) => `$${match}`
     );
     query = TheBootSch.find(JSON.parse(queryStr)).populate("ccourses");
-    console.log(query);
+    console.log(query)
+    console.log(JSON.parse(queryStr));
 
     if (requ.query.select) {
       const fields = requ.query.select.split(",").join(" ");

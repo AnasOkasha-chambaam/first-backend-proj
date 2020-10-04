@@ -1,5 +1,6 @@
 const TheErrHandler = (err, req, res, next) => {
   // console.log(`${err.stack}`.red.underline);
+  console.log('heeeeeeeeeeeeey')
   console.log(err);
   let stCode = err.statusCode || 500,
     errMsg = err.message || "There is some errors with the server.";
