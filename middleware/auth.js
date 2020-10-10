@@ -37,12 +37,13 @@ exports.protect = async (req, res, next) => {
   let token;
   if (req.cookies) {
     token = req.cookies.TheToken;
-  } else if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = await req.headers.authorization.split(" ")[1];
   }
+  // else if (
+  //   req.headers.authorization &&
+  //   req.headers.authorization.startsWith("Bearer")
+  // ) {
+  //   token = await req.headers.authorization.split(" ")[1];
+  // }
   if (!token) {
     return next(new ErrResp("Please, sign in first!.", 401));
   }
@@ -61,6 +62,9 @@ exports.protect = async (req, res, next) => {
     // console.log(req.cookies)
     next();
   } catch (er) {
+    console.log('------------------======================0---------------')
+    console.log(er)
+    console.log('--------------000000000000000000000-----------------')
     next(new ErrResp("You are not authorized to reach this!", 401));
   }
 };

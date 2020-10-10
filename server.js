@@ -1,13 +1,17 @@
-const path = require('path'),
+const path = require("path"),
   theExpress = require("express"),
   theDotenv = require("dotenv"),
-  {
-    connetToDB
-  } = require('./db'),
-  colorse = require('colors'),
-  errorHan = require('./middleware/errhandler'),
-  fileUp = require('express-fileupload'),
-  cookieParser = require('cookie-parser');
+  { connetToDB } = require("./db"),
+  colorse = require("colors"),
+  errorHan = require("./middleware/errhandler"),
+  fileUp = require("express-fileupload"),
+  cookieParser = require("cookie-parser"),
+  mongoSanitize = require("express-mongo-sanitize"),
+  helmet = require("helmet"),
+  xss = require("xss-clean"),
+  rateLimit = require("express-rate-limit"),
+  hpp = require("hpp"),
+  cors = require("cors");
 
 theDotenv.config({
   path: "./config/config.env",
@@ -18,22 +22,28 @@ connetToDB();
 const app = theExpress(),
   thePort = process.env.PORT || 5001,
   theBootcampFunctions = require("./router/router"),
-  theAuthFunctions = require('./router/auth'),
+  theAuthFunctions = require("./router/auth"),
   // { theLogger } = require("./middleware/logger"),
   morgan = require("morgan");
 // app.use(theLogger)
-app.use(theExpress.json())
+app.use(theExpress.json());
 
-app.use(cookieParser())
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
-app.use(fileUp())
-app.use(theExpress.static(path.join(__dirname, 'public')))
+app.use(fileUp());
+app.use(mongoSanitize());
+app.use(helmet());
+app.use(xss());
+app.use(rateLimit({ windowMs: 10 * 60 * 1000, max: 100 }));
+app.use(hpp());
+app.use(cors());
+app.use(theExpress.static(path.join(__dirname, "public")));
 app.use("/api/version1", theBootcampFunctions);
-app.use('/api/version1/auth', theAuthFunctions)
-app.use(errorHan)
+app.use("/api/version1/auth", theAuthFunctions);
+app.use(errorHan);
 
 const theServer = app.listen(thePort, () => {
   /*
@@ -52,12 +62,13 @@ const theServer = app.listen(thePort, () => {
   */
 
   console.log(
-    `The server is running in the ${process.env.NODE_ENV} mode and on ${thePort} port.`.yellow.bold
+    `The server is running in the ${process.env.NODE_ENV} mode and on ${thePort} port.`
+      .yellow.bold
   );
 });
 
-process.on('unhandledRejection', (err, promise) => {
+process.on("unhandledRejection", (err, promise) => {
   // console.log(err)
-  console.log(`Error: ${err.message}`.red.bold)
-  theServer.close(() => process.exit(1))
-})
+  console.log(`Error: ${err.message}`.red.bold);
+  theServer.close(() => process.exit(1));
+});

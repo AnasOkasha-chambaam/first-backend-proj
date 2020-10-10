@@ -17,6 +17,15 @@ const theSecExpress = require('express'),
     postABootcampCourse
   } = require('../controller/courses'),
   {
+    getAllReviews,
+    postAReview,
+    updateAReview,
+    getAReview,
+    deleteAReview,
+    getABootcampReviews,
+    postABootcampReview
+  } = require('../controller/reviews'),
+  {
     onlyAdmin
   } = require('../middleware/auth'),
   {
@@ -77,4 +86,22 @@ theRouter.route('/users/:id')
 
 theRouter.route('/users/:id/resetpass')
   .put(onlyAdmin, changeUserPassword)
+
+
+// reviews
+theRouter.route('/reviews')
+  .get(getAllReviews)
+// .post(protect, authorize('publisher', 'admin'), postAReview)
+
+theRouter.route('/reviews/:id')
+  .put(protect, authorize('publisher', 'admin', 'user'), updateAReview)
+  .get(getAReview)
+  .delete(protect, authorize('publisher', 'admin', 'user'), deleteAReview)
+
+theRouter.route('/bootcamps/:id/reviews')
+  .get(getABootcampReviews)
+  .post(protect, authorize('publisher', 'admin', 'user'), postABootcampReview)
+
+
+
 module.exports = theRouter;

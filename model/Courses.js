@@ -90,6 +90,7 @@ courses.post("save", function () {
 courses.pre("remove", function () {
   this.constructor.getAv(this.bootcamp);
 });
+
 module.exports = theMongoose.model("CoursesDB", courses);
 // "bootcamp": "5d713995b721c3bb38c1f5d0",
 // 5d713995b721c3bb38c1f5d0

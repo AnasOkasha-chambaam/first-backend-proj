@@ -79,6 +79,18 @@ exports.getMe = async (req, res, next) => {
   })
 }
 
+exports.logOut = async (req, res, next) => {
+  res.cookie('TheToken', 'none', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  })
+  res.status(200).send({
+    success: true,
+    msg: 'Your logged out!',
+    data: {}
+  })
+}
+
 exports.resetUserPassword = async (req, res, next) => {
   const user = await AUser.findOne({
     email: req.body.email
